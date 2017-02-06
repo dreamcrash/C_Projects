@@ -21,6 +21,7 @@ Command_parser *load_command_parser(){
     
     if(parser){
         const char *array_names[] = {
+            SET_MARKER,
             SAVE_NAME,
             POINT_NAME,
             LINE_NAME,
@@ -61,6 +62,7 @@ Command_parser *load_command_parser(){
             if(no_null)
             {
                 const Function_parser_ptr parser_functions[] = {
+                    SET_MARKER_FUNCTION,
                     SAVE_FUNCTION,
                     POINT_FUNCTION,
                     LINE_FUNCTION, 
@@ -194,6 +196,27 @@ ERRORHANDLE execute_commands(Draw *draw, const Command_parser *command_parser){
     return EXIT;
 }
 
+/**
+ * Changes to the current draw marker
+ * 
+ * @param draw      : Current draw
+ * @param arguments : ...
+ * @return WRONG_PARSER if the user insert bad strings and SUCCESS otherwise
+ */
+ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments){
+        
+    char new_marker;
+    int result = sscanf(arguments, " %c", &new_marker);
+    
+    // Check if the number of arguments are correct
+    if(result == 1)
+    {
+        set_marker(draw, new_marker);
+        return SUCCESS;
+    }
+    else
+        return WRONG_PARSER;
+}
 
 /**
  * Saves the current draw in a file

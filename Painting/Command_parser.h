@@ -12,6 +12,7 @@ extern "C" {
 #endif
 #include "Draw.h"
 #include "ERROS.h"
+#define SET_MARKER       "setmarker"
 #define SAVE_NAME       "save"
 #define POINT_NAME      "point"   
 #define LINE_NAME       "line"
@@ -19,6 +20,7 @@ extern "C" {
 #define POLYLINE_NAME   "polyLine"
 #define CIRC_NAME       "circ"
 #define ELLIPSE_NAME     "ellipse"
+#define SET_MARKER_FUNCTION set_marker_parser
 #define SAVE_FUNCTION   save_parser
 #define POINT_FUNCTION  point_parser
 #define LINE_FUNCTION   line_parser
@@ -31,7 +33,8 @@ typedef struct COMMAND_PARSER{
     
     int total_commands_names;
     
-    // just to insure that number of total_commands_names and functions are 
+    // just to insure that number of 
+    // total_commands_names and functions are 
     // the same
     int total_commands_functions; 
     
@@ -47,6 +50,7 @@ typedef struct COMMAND_PARSER{
 Command_parser *load_command_parser         ();
 void free_comand_parser                     (Command_parser **parser);
 ERRORHANDLE  execute_commands               (Draw *draw, const Command_parser *cp);
+ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments);
 ERRORHANDLE save_parser                     (Draw *draw, char *arguments);
 ERRORHANDLE point_parser                    (Draw *d, char *arguments);
 ERRORHANDLE line_parser                     (Draw *d, char *arguments);
