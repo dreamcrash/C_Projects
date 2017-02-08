@@ -44,6 +44,7 @@ ERRORHANDLE draw_in_screen          (Draw *draw, const Command_parser *cp);
 void free_draw                      (Draw **draw);
 void check_erros_msg                (ERRORHANDLE msg);
 ERRORHANDLE start_draw              (int cols, int rows);
+ERRORHANDLE to_draw                 (Draw *draw);
 
 
 #ifdef __cplusplus

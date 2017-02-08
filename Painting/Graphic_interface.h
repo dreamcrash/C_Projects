@@ -19,7 +19,9 @@ void print_msg                      (char *string);
 void clear_screen                   ();
 void main_menu                      ();
 void main_menu_graphic_msg          ();
+void read_file_name_msg             ();
 ERRORHANDLE menu_start_draw         ();
+ERRORHANDLE menu_load_draw          ();
 
 
 #ifdef __cplusplus

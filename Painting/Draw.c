@@ -161,23 +161,28 @@ ERRORHANDLE start_draw(int cols, int rows){
             
         Draw *draw = dim(cols, rows);
         
-        if(draw)
-        {
-            Command_parser *command_parser  = load_command_parser();
-            
-            if(command_parser)
-            {
-                int result = draw_in_screen(draw, command_parser);
-                free_draw(&draw);
-                free_comand_parser(&command_parser);
-                return result;
-            }
-            else{
-                free_draw(&draw);
-                return MEMORY_PROBLEMS;
-            }
-        }
-        else
-            return MEMORY_PROBLEMS;
+        return (draw) ? to_draw(draw) : MEMORY_PROBLEMS;
    }
 
+
+/**
+ * Performing the actually draw
+ * @param draw : The empty draw
+ * @return 
+ */
+ERRORHANDLE to_draw(Draw *draw){
+    
+    Command_parser *command_parser  = load_command_parser();
+    
+    if(command_parser)
+    {
+        int result = draw_in_screen(draw, command_parser);
+        free_draw(&draw);
+        free_comand_parser(&command_parser);
+        return result;
+    }
+    else{
+        free_draw(&draw);
+        return MEMORY_PROBLEMS;
+    }
+} 

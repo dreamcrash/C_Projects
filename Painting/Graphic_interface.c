@@ -5,6 +5,7 @@
 #include "Draw.h"
 #include "ERROS.h"
 #include "My_String.h"
+#include "Management_command.h"
 
 /**
  * Function that will print in the bottom of the draw the 'xx' coordinates.
@@ -131,6 +132,11 @@ void main_menu (){
                 // Creating a new draw
                 case 1: result = menu_start_draw();
                         break;
+                        
+                // Loading a draw from a file and starts a draw
+                case 2: result = menu_load_draw();
+                        break;
+                        
              
                 default : puts("\n\t\t\t\t\tOption not valid!\n");
                         getchar();
@@ -168,6 +174,10 @@ void main_menu_graphic_msg(){
     print_char_x_times (50,'*');   
 }
 
+void read_file_name_msg(){
+    printf("Insert the file name : \n");
+}
+
 ERRORHANDLE menu_start_draw(){
     
     int cols = 0, rows = 0;
@@ -181,7 +191,6 @@ ERRORHANDLE menu_start_draw(){
     
     if(result == 2)
     {
-        
         // Check the boundaries just to print to the user
         // the dim function adjusts the dimension internally
         int tmp_cols = cols, tmp_rows = rows; 
@@ -196,4 +205,23 @@ ERRORHANDLE menu_start_draw(){
         return start_draw(cols, rows);
     }
     return WRONG_PARSER;
+}
+/**
+ * Loading a draw before having creating a any draw.
+ * @return 
+ */
+ERRORHANDLE menu_load_draw (){
+    
+    read_file_name_msg();
+    
+    size_t string_size = 0;
+    
+    // Reading the user command as a string
+    char *file_name = read_strings_stdin(&string_size); 
+    
+    Draw *draw = LoadMFT(file_name);
+    
+    free(file_name);
+    
+    return draw ? to_draw(draw) : MEMORY_PROBLEMS;
 }

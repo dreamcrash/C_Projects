@@ -47,7 +47,7 @@ ERRORHANDLE merge(char *file_name, Draw *draw){
            // Copying the draw
             for(int i = 0;i < tmp_draw->number_rows;i++)
                 for(int j = 0;j< tmp_draw->number_cols;j++)
-                    if(tmp_draw->screen[i][j]!=0) // if it is not a space
+                    if(tmp_draw->screen[i][j] != ' ') // if it is not a space
                         draw->screen[i][j] = tmp_draw->screen[i][j];
           
                 free_draw(&tmp_draw);
