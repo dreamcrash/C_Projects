@@ -22,6 +22,7 @@ Command_parser *load_command_parser(){
     if(parser){
         const char *array_names[] = {
             SET_MARKER,
+            MERGE_NAME,
             SAVE_NAME,
             POINT_NAME,
             LINE_NAME,
@@ -63,6 +64,7 @@ Command_parser *load_command_parser(){
             {
                 const Function_parser_ptr parser_functions[] = {
                     SET_MARKER_FUNCTION,
+                    MERGE_FUNCTION,
                     SAVE_FUNCTION,
                     POINT_FUNCTION,
                     LINE_FUNCTION, 
@@ -217,6 +219,50 @@ ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments){
     else
         return WRONG_PARSER;
 }
+
+
+/**
+ * Loads a previously save draw and merge it with the current one
+ * 
+ * @param draw      : Current draw
+ * @param arguments : ...
+ * @return  It will return:  
+ *  > MEMORY_PROBLEMS if there is memory allocation;
+ *  > WRONG_PARSER  if the user insert bad strings; 
+ *  > FILE_ERROR if the function could not read the file; 
+ *  > FILE_WRONG_DIM if the draw to be load is bigger then
+ * the current draw; 
+ *  >SUCCESS otherwise
+ */
+ERRORHANDLE merge_parser                    (Draw *draw, char *arguments){
+    
+    size_t string_size = strlen(arguments);
+    
+    char *file_name = malloc(string_size + 1);
+    
+    if(file_name){
+        
+        int result = sscanf(arguments, " %s", file_name);
+        
+        if(result == 1)
+        {
+            ERRORHANDLE merge_result = merge(file_name, draw);
+            free(file_name);
+            return merge_result;
+        }
+        else
+        {
+            free(file_name);
+            return WRONG_PARSER;
+        }
+    }
+    else
+        return MEMORY_PROBLEMS;
+    
+    return SUCCESS;
+}
+
+
 
 /**
  * Saves the current draw in a file

@@ -65,7 +65,7 @@ Draw *new_draw (int cols, int rows){
         for(int c = 0; c < rows && no_nulls; c++)
         {
             // yep I know that chars are one byte
-            screen[c] = malloc(sizeof(screen[c]) * (cols +1)); 
+            screen[c] = malloc(sizeof(screen[c]) * (cols + 1)); 
             if(!screen[c]) no_nulls = 0;
         }
         if(no_nulls){

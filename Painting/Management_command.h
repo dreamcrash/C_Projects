@@ -11,10 +11,6 @@ extern "C" {
 #endif
    
 #define FILE_BUFFER 128
-#define FILE_ERRORHANDLE int 
-#define FILE_ERROR 0
-#define FILE_SUCCESS 1
-#define FILE_WRONG_DIM 2
     
 /** 
  * Structure used to save information about a draw that 
@@ -37,8 +33,8 @@ typedef struct SAVEDDRAW
  
 Draw *dim                   (int lines, int columns);    
 void set_marker             (Draw *draw, char new_marker);
-FILE_ERRORHANDLE merge      (char *file_name, Draw *draw);
-FILE_ERRORHANDLE saveMFT    (SaveDraw *data);
+ERRORHANDLE merge           (char *file_name, Draw *draw);
+ERRORHANDLE saveMFT         (SaveDraw *data);
 Draw *LoadMFT               (char *filename);
 
 

@@ -12,7 +12,9 @@ extern "C" {
 #endif
 #include "Draw.h"
 #include "ERROS.h"
+    // The names of the commands
 #define SET_MARKER       "setmarker"
+#define MERGE_NAME      "merge"    
 #define SAVE_NAME       "save"
 #define POINT_NAME      "point"   
 #define LINE_NAME       "line"
@@ -20,7 +22,10 @@ extern "C" {
 #define POLYLINE_NAME   "polyLine"
 #define CIRC_NAME       "circ"
 #define ELLIPSE_NAME     "ellipse"
+
+    // The functions pointers of the commands
 #define SET_MARKER_FUNCTION set_marker_parser
+#define MERGE_FUNCTION  merge_parser
 #define SAVE_FUNCTION   save_parser
 #define POINT_FUNCTION  point_parser
 #define LINE_FUNCTION   line_parser
@@ -51,6 +56,7 @@ Command_parser *load_command_parser         ();
 void free_comand_parser                     (Command_parser **parser);
 ERRORHANDLE  execute_commands               (Draw *draw, const Command_parser *cp);
 ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments);
+ERRORHANDLE merge_parser                    (Draw *draw, char *arguments);
 ERRORHANDLE save_parser                     (Draw *draw, char *arguments);
 ERRORHANDLE point_parser                    (Draw *d, char *arguments);
 ERRORHANDLE line_parser                     (Draw *d, char *arguments);

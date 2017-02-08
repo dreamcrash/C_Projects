@@ -13,6 +13,9 @@
 #define MEMORY_PROBLEMS 4
 #define KEEP_EXECUTION 5
 #define COMMAND_NOT_FOUND 6
+#define FILE_ERROR 7
+#define FILE_SUCCESS 8
+#define FILE_WRONG_DIM 9
 
 
 #ifdef __cplusplus

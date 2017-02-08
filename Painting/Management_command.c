@@ -34,7 +34,7 @@ void set_marker(Draw *draw, char new_marker){
  * read the file, FILE_WRONG_DIM if the draw to be load is bigger then
  * the current draw, FILE_SUCESSES otherwise
  */
-FILE_ERRORHANDLE merge(char *file_name, Draw *draw){
+ERRORHANDLE merge(char *file_name, Draw *draw){
   
     Draw *tmp_draw = LoadMFT(file_name);
     
@@ -44,17 +44,20 @@ FILE_ERRORHANDLE merge(char *file_name, Draw *draw){
         if(tmp_draw->number_rows <= draw->number_rows && 
                 tmp_draw->number_cols <= draw->number_cols)
         {
-            // Copying the draw
+           // Copying the draw
             for(int i = 0;i < tmp_draw->number_rows;i++)
                 for(int j = 0;j< tmp_draw->number_cols;j++)
-                    if(tmp_draw->screen[i][j]!=0) // if not space
+                    if(tmp_draw->screen[i][j]!=0) // if it is not a space
                         draw->screen[i][j] = tmp_draw->screen[i][j];
           
-                free(tmp_draw);
+                free_draw(&tmp_draw);
                 return FILE_SUCCESS;
         }
         else
+        {
+            free_draw(&tmp_draw);
             return FILE_WRONG_DIM;
+        }
     }
     else 
         return FILE_ERROR;
@@ -68,7 +71,7 @@ FILE_ERRORHANDLE merge(char *file_name, Draw *draw){
  * @return      : Will return FILE_ERROR if the function could 
  * not read the file FILE_SUCESSES otherwise
  */
-FILE_ERRORHANDLE saveMFT(SaveDraw *data){
+ERRORHANDLE saveMFT(SaveDraw *data){
     
   FILE *fp; 
 
@@ -125,25 +128,28 @@ Draw *LoadMFT(char *filename){
 	if(fgets(filename,FILE_BUFFER,fp) != NULL && 
                 fscanf(fp,"%*[^=]=%d %*[^=]=%d",&rows,&cols) > 0)
         {
-            Draw *draw = new_draw(rows, cols);
+            Draw *draw = new_draw(cols, rows);
 
-            fgets(line, FILE_BUFFER,fp); /* Cleans the rest of line */
+            fgets(line, FILE_BUFFER,fp); // Cleans the rest of line
 
             // While there is still lines to be read
-            for(int i = draw->number_rows - 1; (i>=0)&&(!erro); i--)
+            for(int i = draw->number_rows - 1; (i>=0) && (!erro); i--)
             {
                 j = 1;
                 // While there is still columns to read
                 while((j <= draw->number_cols && (!erro))) 
                 {
-                    if(!fscanf(fp,"%c",&(draw->screen[i][j]))) erro = 1;
+                    int result = fscanf(fp,"%c",&(draw->screen[i][j]));
+                    
+                    if(!result) erro = 1;
                     else j++;
                 }
-
                 while(fgetc(fp)!='\n'); // Reads the rest of the line
+   
             }
+            
             fclose(fp);
-        
+            
             if(erro)
             {
                 free_draw(&draw);
@@ -153,6 +159,7 @@ Draw *LoadMFT(char *filename){
             {
                 return draw;
             }
+   
         }
         else
         { 
