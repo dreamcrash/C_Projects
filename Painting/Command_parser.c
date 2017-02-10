@@ -7,6 +7,7 @@
 #include "Management_command.h"
 #include "ERROS.h"
 #include "My_String.h"
+#include "Graphic_interface.h"
 
 
 /**
@@ -24,6 +25,7 @@ Command_parser *load_command_parser(){
             SET_MARKER,
             MERGE_NAME,
             SAVE_NAME,
+            LOAD_NAME,
             POINT_NAME,
             LINE_NAME,
             RECT_NAME,
@@ -66,6 +68,7 @@ Command_parser *load_command_parser(){
                     SET_MARKER_FUNCTION,
                     MERGE_FUNCTION,
                     SAVE_FUNCTION,
+                    LOAD_FUNCTION,
                     POINT_FUNCTION,
                     LINE_FUNCTION, 
                     RECT_FUNCTION,
@@ -334,6 +337,80 @@ ERRORHANDLE save_parser (Draw *draw, char *arguments){
         }
     }
     return MEMORY_PROBLEMS;
+}
+
+/**
+ * Loading a draw into the screen
+ * @param draw          : Current draw
+ * @param arguments     : ...
+ * @return  MEMORY_PROBLEMS if there was memory problems, WRONG_PARSER
+ * if the user insert bad strings and SUCCESS otherwise
+ */
+ERRORHANDLE load_parser (Draw *draw, char *arguments){
+    
+    char *file_name = malloc(strlen(arguments) + 1);
+    
+    if(file_name){
+        
+        int result = sscanf(arguments, " %s", file_name);
+        
+        if(result == 1)
+        {
+            are_you_sure(); // Ask if to load the draw
+                
+            size_t string_size;
+            char *answer_str = read_strings_stdin(&string_size);
+            
+            char answer;
+            int result = sscanf(answer_str, "%c",&answer);
+            
+            free(answer_str);
+            
+            // The user really wants to load the draw
+            if(result == 1 && (answer == 'y' || answer == 'Y'))
+            {
+                
+                Draw *new_draw = LoadMFT(file_name);
+                
+                if(new_draw)
+                {   
+                    // Free the old matrix with the old draw
+                    free_screen(draw->screen, draw->number_rows);
+                    
+                    // Copy element by element
+                    draw->number_cols = new_draw->number_cols;
+                    draw->number_rows = new_draw->number_rows;
+                    draw->screen = create_screen_draw(  draw->number_cols, 
+                                                        draw->number_rows);
+                
+                    // Copy screen
+                    for(int i = 0; i < draw->number_rows; i++)
+                        for(int j = 0; j < draw->number_cols; j++)
+                            draw->screen[i][j] = new_draw->screen[i][j];
+               
+                    free_draw(&new_draw);          // free the old pointer
+                    free(file_name);
+            
+                    return SUCCESS;
+                }
+                else
+                {
+                    free(file_name);
+                    return MEMORY_PROBLEMS;
+                }
+            }
+        }
+        else
+        {
+            free(file_name);
+            return WRONG_PARSER;
+        }
+    }
+    else
+        return MEMORY_PROBLEMS;
+    
+    return SUCCESS;
+    
 }
 
 

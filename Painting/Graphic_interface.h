@@ -20,6 +20,7 @@ void clear_screen                   ();
 void main_menu                      ();
 void main_menu_graphic_msg          ();
 void read_file_name_msg             ();
+void are_you_sure                   ();
 ERRORHANDLE menu_start_draw         ();
 ERRORHANDLE menu_load_draw          ();
 

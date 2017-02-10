@@ -16,6 +16,7 @@ extern "C" {
 #define SET_MARKER       "setmarker"
 #define MERGE_NAME      "merge"    
 #define SAVE_NAME       "save"
+#define LOAD_NAME       "load"
 #define POINT_NAME      "point"   
 #define LINE_NAME       "line"
 #define RECT_NAME       "rect"
@@ -27,6 +28,7 @@ extern "C" {
 #define SET_MARKER_FUNCTION set_marker_parser
 #define MERGE_FUNCTION  merge_parser
 #define SAVE_FUNCTION   save_parser
+#define LOAD_FUNCTION   load_parser
 #define POINT_FUNCTION  point_parser
 #define LINE_FUNCTION   line_parser
 #define RECT_FUNCTION   rect_parser
@@ -58,6 +60,7 @@ ERRORHANDLE  execute_commands               (Draw *draw, const Command_parser *c
 ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments);
 ERRORHANDLE merge_parser                    (Draw *draw, char *arguments);
 ERRORHANDLE save_parser                     (Draw *draw, char *arguments);
+ERRORHANDLE load_parser                     (Draw *draw, char *arguments);
 ERRORHANDLE point_parser                    (Draw *d, char *arguments);
 ERRORHANDLE line_parser                     (Draw *d, char *arguments);
 ERRORHANDLE rect_parser                     (Draw *d, char *arguments);

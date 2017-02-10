@@ -111,6 +111,7 @@ void clear_screen(){
 void main_menu (){
     int option = 0;
     int result = 0;
+    
     do{
         clear_screen();
         main_menu_graphic_msg();
@@ -176,6 +177,10 @@ void main_menu_graphic_msg(){
 
 void read_file_name_msg(){
     printf("Insert the file name : \n");
+}
+
+void are_you_sure(){
+    printf("Are you sure? The current draw will be lost !!! (y/Y for yes) \n");
 }
 
 ERRORHANDLE menu_start_draw(){

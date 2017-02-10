@@ -38,9 +38,11 @@ struct Command_parser;
     
 int check_draw                      (Draw *draw, int x, int y);
 void check_adjust_boundaries        (int *cols, int *rows);
+char **create_screen_draw           (int cols, int rows);
 Draw *new_draw                      (int cols, int rows);
 void add_functions_to_draw          (Draw *draw);
 ERRORHANDLE draw_in_screen          (Draw *draw, const Command_parser *cp);
+void free_screen                    (char **screen, int rows);
 void free_draw                      (Draw **draw);
 void check_erros_msg                (ERRORHANDLE msg);
 ERRORHANDLE start_draw              (int cols, int rows);

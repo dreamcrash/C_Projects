@@ -10,7 +10,7 @@
 #include "Graphic_interface.h"
 
 
-int main(int argc, char** argv) {
+int main(void) {
     
     main_menu();
     return (EXIT_SUCCESS);

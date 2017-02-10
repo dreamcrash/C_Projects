@@ -44,23 +44,17 @@ void check_adjust_boundaries(int *cols, int *rows){
 }
 
 /**
- * Creating and returning a draw object with dimension cols and rows.
- * If the dimensions are not within the limits, the dimension
- * will be adjust to a given default size
- * 
- * @param cols  : The total of columns of the draw
- * @param rows  : The total of rows of the draw
- * @return      : The created draw
- */    
-Draw *new_draw (int cols, int rows){
+ * Creates the matrix where the draw will be save
+ * @param cols  : the number of columns of the draw 
+ * @param rows  : the number of rows of the draw
+ * @return      : The newly created matrix 
+ */
+ char **create_screen_draw(int cols, int rows){
     
-    // Check for out of boundaries problems
-    check_adjust_boundaries(&cols, &rows);
+     char **screen = malloc(sizeof(screen) * rows);
     
-    char **screen = malloc(sizeof(screen) * rows);
-    
-    if(screen)
-    {
+     if(screen)
+     {
         int no_nulls = 1;
         for(int c = 0; c < rows && no_nulls; c++)
         {
@@ -77,19 +71,41 @@ Draw *new_draw (int cols, int rows){
                     screen[r][c] = ' ';
                 screen[r][cols] = '\0';
             }
-            
-            Draw *draw = malloc(sizeof(*draw));
-            
-            if(draw){
-                
-                draw->number_cols       = cols;
-                draw->number_rows       = rows;
-                add_functions_to_draw(draw);
-                draw->screen            = screen;
-                draw->marker            = DEFAULT_CHAR;
-                clean(draw);
-                return draw;
-            }
+        }
+        return screen;
+     }
+     return NULL; // Memory problems
+ }
+
+/**
+ * Creating and returning a draw object with dimension cols and rows.
+ * If the dimensions are not within the limits, the dimension
+ * will be adjust to a given default size
+ * 
+ * @param cols  : The total of columns of the draw
+ * @param rows  : The total of rows of the draw
+ * @return      : The created draw
+ */    
+Draw *new_draw (int cols, int rows){
+    
+    // Check for out of boundaries problems
+    check_adjust_boundaries(&cols, &rows);
+    
+    char **screen = create_screen_draw(cols, rows);
+    
+    if(screen)
+    {
+        Draw *draw = malloc(sizeof(*draw));
+        
+        if(draw)
+        {
+            draw->number_cols       = cols;
+            draw->number_rows       = rows;
+            add_functions_to_draw(draw);
+            draw->screen            = screen;
+            draw->marker            = DEFAULT_CHAR;
+            clean(draw);
+            return draw;
         }
     }
     // memory problems
@@ -135,6 +151,22 @@ ERRORHANDLE draw_in_screen(Draw *draw, const Command_parser *command_parser){
 }
 
 /**
+ * This function will free the memory allocated to the matrix
+ * that holds the draw.
+ * 
+ * @param screen    : The matrix to be freed
+ * @param rows      : The number of rows
+ */
+void free_screen(char **screen, int rows){
+    
+    for(int i = 0; i < rows; i++)
+    {
+        free(screen[i]);
+    }
+    free(screen);
+}
+
+/**
  * This function will free the memory occupied by a given draw
  * @param draw : The draw to be freed
  */
@@ -142,12 +174,8 @@ void free_draw(Draw **draw){
     
     Draw *tmp = *draw;
     
-    for(int i = 0; i < tmp->number_rows; i++)
-    {
-        free(tmp->screen[i]);
-        tmp->screen[i] = NULL;
-    }
-    free(tmp->screen);
+    free_screen(tmp->screen, tmp->number_rows);
+    
     tmp->screen = NULL;
     tmp->print = NULL;
     tmp->check_draw_limits = NULL;
