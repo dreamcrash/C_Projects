@@ -1,4 +1,3 @@
-
 /* 
  * File:   Graphic_interface.h
  * Author: Bruno Medeiros.
@@ -10,7 +9,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "Draw.h"
+#include "Draw_session.h"
 
 void printXXnumbers                 (Draw *draw);
 void printDraw                      (Draw *draw);
@@ -30,4 +29,3 @@ ERRORHANDLE menu_load_draw          ();
 #endif
 
 #endif /* GRAPHIC_INTERFACE_H */
-

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "Graphic_interface.h"
-#include "Draw.h"
+#include "Draw_session.h"
 #include "ERROS.h"
 #include "My_String.h"
 #include "Management_command.h"
@@ -45,9 +45,9 @@ void printXXnumbers(Draw *draw){
  */
 void printDraw(Draw *draw){
     
-    const int num_cols = draw->number_cols;
-    const int num_rows = draw->number_rows;
-    char **screen = draw->screen;
+    const int num_cols  = draw->number_cols;
+    const int num_rows  = draw->number_rows;
+    char **screen       = draw->screen;
     
     //draw upper
     printf("   _");
@@ -109,6 +109,8 @@ void clear_screen(){
  * Main Menu
  */
 void main_menu (){
+    
+    
     int option = 0;
     int result = 0;
     
@@ -207,7 +209,7 @@ ERRORHANDLE menu_start_draw(){
             printf("Automatically adjust to [ %d | %d ]\n ",cols, rows);
             getchar();
         }
-        return start_draw(cols, rows);
+        return start_session(cols, rows);
     }
     return WRONG_PARSER;
 }
@@ -223,10 +225,12 @@ ERRORHANDLE menu_load_draw (){
     
     // Reading the user command as a string
     char *file_name = read_strings_stdin(&string_size); 
-    
+     
     Draw *draw = LoadMFT(file_name);
+     
+    Draw_session *session = new_session_with_load_draw(draw);
     
     free(file_name);
     
-    return draw ? to_draw(draw) : MEMORY_PROBLEMS;
+    return draw ? to_draw(session) : MEMORY_PROBLEMS;
 }

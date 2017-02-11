@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Draw.h"
+#include "Draw_session.h"
 #include "Management_command.h"
 
 /**
@@ -34,9 +34,10 @@ void set_marker(Draw *draw, char new_marker){
  * read the file, FILE_WRONG_DIM if the draw to be load is bigger then
  * the current draw, FILE_SUCESSES otherwise
  */
-ERRORHANDLE merge(char *file_name, Draw *draw){
+ERRORHANDLE merge(char *file_name, Draw_session *session){
   
-    Draw *tmp_draw = LoadMFT(file_name);
+    Draw *tmp_draw  = LoadMFT(file_name);
+    Draw *draw      = session->draw;
     
     // If draw as successfully loaded and have smaller dimension than the 
     // current draw
@@ -50,12 +51,12 @@ ERRORHANDLE merge(char *file_name, Draw *draw){
                     if(tmp_draw->screen[i][j] != ' ') // if it is not a space
                         draw->screen[i][j] = tmp_draw->screen[i][j];
           
-                free_draw(&tmp_draw);
+                free_draw(tmp_draw);
                 return FILE_SUCCESS;
         }
         else
         {
-            free_draw(&tmp_draw);
+            free_draw(tmp_draw);
             return FILE_WRONG_DIM;
         }
     }
@@ -82,9 +83,9 @@ ERRORHANDLE saveMFT(SaveDraw *data){
   }
   else
   { 
-        int rows = data->draw->number_rows;
-        int cols = data->draw->number_cols;
-        char **screen = data->draw->screen;
+        int rows = data->session->draw->number_rows;
+        int cols = data->session->draw->number_cols;
+        char **screen = data->session->draw->screen;
         
         fprintf(fp,"Id:%s\n",data->text[ID]);
 	fprintf(fp,"Comment:%s\n",data->text[COMMENT]);
@@ -152,7 +153,7 @@ Draw *LoadMFT(char *filename){
             
             if(erro)
             {
-                free_draw(&draw);
+              //  free_draw(&draw); @SESSION
                 return NULL;
             }
             else

@@ -5,7 +5,7 @@
 
 #ifndef DRAW_COMMAND_H
 #define DRAW_COMMAND_H
-#include "Draw.h"
+#include "Draw_session.h"
 #include "ERROS.h"
 
 
@@ -35,4 +35,3 @@ extern "C" {
 #endif
 
 #endif /* DRAW_COMMAND_H */
-

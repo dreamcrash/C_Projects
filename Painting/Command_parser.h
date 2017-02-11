@@ -10,7 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "Draw.h"
+#include "Draw_session.h"
 #include "ERROS.h"
     // The names of the commands
 #define SET_MARKER       "setmarker"
@@ -34,7 +34,7 @@ extern "C" {
 #define RECT_FUNCTION   rect_parser
 
         
-typedef ERRORHANDLE (*Function_parser_ptr) (Draw *d, char *arguments);
+typedef ERRORHANDLE (*Function_parser_ptr) (Draw_session *ds, char *args);
     
 typedef struct COMMAND_PARSER{
     
@@ -56,15 +56,15 @@ typedef struct COMMAND_PARSER{
 
 Command_parser *load_command_parser         ();
 void free_comand_parser                     (Command_parser **parser);
-ERRORHANDLE  execute_commands               (Draw *draw, const Command_parser *cp);
-ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments);
-ERRORHANDLE merge_parser                    (Draw *draw, char *arguments);
-ERRORHANDLE save_parser                     (Draw *draw, char *arguments);
-ERRORHANDLE load_parser                     (Draw *draw, char *arguments);
-ERRORHANDLE point_parser                    (Draw *d, char *arguments);
-ERRORHANDLE line_parser                     (Draw *d, char *arguments);
-ERRORHANDLE rect_parser                     (Draw *d, char *arguments);
-Function_parser_ptr give_function_command   (const Command_parser *command_parser, 
+ERRORHANDLE execute_commands                (Draw_session *ds);
+ERRORHANDLE set_marker_parser               (Draw_session *ds, char *args);
+ERRORHANDLE merge_parser                    (Draw_session *ds, char *args);
+ERRORHANDLE save_parser                     (Draw_session *ds, char *args);
+ERRORHANDLE load_parser                     (Draw_session *ds, char *args);
+ERRORHANDLE point_parser                    (Draw_session *ds, char *args);
+ERRORHANDLE line_parser                     (Draw_session *ds, char *args);
+ERRORHANDLE rect_parser                     (Draw_session *ds, char *args);
+Function_parser_ptr give_function_command   (const Command_parser *cp, 
                                              const char *command_name);
                                             
 #ifdef __cplusplus
@@ -72,4 +72,3 @@ Function_parser_ptr give_function_command   (const Command_parser *command_parse
 #endif
 
 #endif /* DRAW_COMMAND_PARSER_H */
-

@@ -23,7 +23,7 @@ typedef struct SAVEDDRAW
                                   * 2 -> Author
                                   * 3 -> File name
                                   */ 
-    Draw *draw;
+    Draw_session *session;
  }SaveDraw;
 
 #define ID 0 
@@ -33,7 +33,7 @@ typedef struct SAVEDDRAW
  
 Draw *dim                   (int lines, int columns);    
 void set_marker             (Draw *draw, char new_marker);
-ERRORHANDLE merge           (char *file_name, Draw *draw);
+ERRORHANDLE merge           (char *file_name, Draw_session *draw);
 ERRORHANDLE saveMFT         (SaveDraw *data);
 Draw *LoadMFT               (char *filename);
 
@@ -43,4 +43,3 @@ Draw *LoadMFT               (char *filename);
 #endif
 
 #endif /* MANAGEMENT_COMMAND_H */
-

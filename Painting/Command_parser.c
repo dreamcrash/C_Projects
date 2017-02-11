@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Draw.h"
 #include "Command_parser.h"
+#include "Draw_session.h"
 #include "Drawing_command.h"
 #include "Management_command.h"
 #include "ERROS.h"
 #include "My_String.h"
 #include "Graphic_interface.h"
+#include "Draw.h"
 
 
 /**
@@ -20,7 +21,8 @@ Command_parser *load_command_parser(){
     
     Command_parser *parser = malloc(sizeof(*parser));
     
-    if(parser){
+    if(parser)
+    {
         const char *array_names[] = {
             SET_MARKER,
             MERGE_NAME,
@@ -38,6 +40,7 @@ Command_parser *load_command_parser(){
         // Count total of commands
         int total_commands_name = 0;
         for(int i = 0; array_names[i]; i++, total_commands_name++);
+        
         parser->total_commands_names = total_commands_name;
         
         parser->commands_names = malloc(sizeof(parser->commands_names) 
@@ -51,12 +54,14 @@ Command_parser *load_command_parser(){
             // Copy name by name
             for(int i = 0; i < total_commands_name && no_null; i++)
             {
-                parser->commands_names[i] = malloc(sizeof(strlen(array_names[i]))
-                                                +1);
-                if(parser->commands_names[i]){
+                parser->commands_names[i] = malloc(strlen(array_names[i]) + 1);
+                
+                if(parser->commands_names[i])
+                {
                     strcpy(parser->commands_names[i], array_names[i]);
                 }
-                else{
+                else
+                {
                     no_null = 0;
                 }
             }
@@ -81,8 +86,9 @@ Command_parser *load_command_parser(){
                 
                 parser->total_commands_functions = total_commands_functions;
 
-                parser->parser_functions = malloc(sizeof(parser->parser_functions) 
-                                            * total_commands_functions);
+                parser->parser_functions = 
+                        malloc(sizeof(parser->parser_functions) 
+                        * total_commands_functions);
                 
                 if(parser->parser_functions)
                 {
@@ -145,7 +151,7 @@ void free_comand_parser(Command_parser **parser){
  * 
  */
 
-ERRORHANDLE execute_commands(Draw *draw, const Command_parser *command_parser){
+ERRORHANDLE execute_commands(Draw_session *draw){
     
     size_t string_size = 0;
     
@@ -159,7 +165,7 @@ ERRORHANDLE execute_commands(Draw *draw, const Command_parser *command_parser){
         int result = sscanf(command, "%s", command_name);
         int msg_to_return = KEEP_EXECUTION;
         
-        if(result)
+        if(result == 1)
         {
             // Lower all the char in the string
             command_name = string_to_lower(command_name);
@@ -171,7 +177,7 @@ ERRORHANDLE execute_commands(Draw *draw, const Command_parser *command_parser){
             else{
                 // Search for the function that will execute the command
                 Function_parser_ptr command_function = 
-                        give_function_command (command_parser, command_name);
+                    give_function_command (draw->command_parser, command_name);
                 
                 if(command_function){
                     
@@ -208,7 +214,7 @@ ERRORHANDLE execute_commands(Draw *draw, const Command_parser *command_parser){
  * @param arguments : ...
  * @return WRONG_PARSER if the user insert bad strings and SUCCESS otherwise
  */
-ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments){
+ERRORHANDLE set_marker_parser    (Draw_session *session, char *arguments){
         
     char new_marker;
     int result = sscanf(arguments, " %c", &new_marker);
@@ -216,7 +222,7 @@ ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments){
     // Check if the number of arguments are correct
     if(result == 1)
     {
-        set_marker(draw, new_marker);
+        set_marker(session->draw, new_marker);
         return SUCCESS;
     }
     else
@@ -237,7 +243,7 @@ ERRORHANDLE set_marker_parser               (Draw *draw, char *arguments){
  * the current draw; 
  *  >SUCCESS otherwise
  */
-ERRORHANDLE merge_parser                    (Draw *draw, char *arguments){
+ERRORHANDLE merge_parser        (Draw_session *draw, char *arguments){
     
     size_t string_size = strlen(arguments);
     
@@ -274,7 +280,7 @@ ERRORHANDLE merge_parser                    (Draw *draw, char *arguments){
  * @return  MEMORY_PROBLEMS if there was memory problems, WRONG_PARSER
  * if the user insert bad strings and SUCCESS otherwise
  */
-ERRORHANDLE save_parser (Draw *draw, char *arguments){
+ERRORHANDLE save_parser (Draw_session *session, char *arguments){
     
     SaveDraw *save_draw = malloc(sizeof(*save_draw));
     
@@ -312,7 +318,7 @@ ERRORHANDLE save_parser (Draw *draw, char *arguments){
             }
             if(no_empty_string)
             {
-                save_draw->draw = draw;
+                save_draw->session = session;
                 
                 // Save the draw on the file
                 ERRORHANDLE result = saveMFT(save_draw);
@@ -346,7 +352,7 @@ ERRORHANDLE save_parser (Draw *draw, char *arguments){
  * @return  MEMORY_PROBLEMS if there was memory problems, WRONG_PARSER
  * if the user insert bad strings and SUCCESS otherwise
  */
-ERRORHANDLE load_parser (Draw *draw, char *arguments){
+ERRORHANDLE load_parser (Draw_session *draw_session, char *arguments){
     
     char *file_name = malloc(strlen(arguments) + 1);
     
@@ -356,6 +362,7 @@ ERRORHANDLE load_parser (Draw *draw, char *arguments){
         
         if(result == 1)
         {
+            Draw *draw = draw_session->draw;
             are_you_sure(); // Ask if to load the draw
                 
             size_t string_size;
@@ -388,7 +395,7 @@ ERRORHANDLE load_parser (Draw *draw, char *arguments){
                         for(int j = 0; j < draw->number_cols; j++)
                             draw->screen[i][j] = new_draw->screen[i][j];
                
-                    free_draw(&new_draw);          // free the old pointer
+                    free_draw(new_draw);   // free the old pointer
                     free(file_name);
             
                     return SUCCESS;
@@ -429,7 +436,7 @@ ERRORHANDLE load_parser (Draw *draw, char *arguments){
  * contain the coordinates.
  */
 
-ERRORHANDLE point_parser        (Draw *draw, char *arguments){
+ERRORHANDLE point_parser   (Draw_session *session, char *arguments){
     
     int x, y;
     int result = sscanf(arguments, "%d %d", &x, &y);
@@ -437,9 +444,9 @@ ERRORHANDLE point_parser        (Draw *draw, char *arguments){
     // Check if the number of arguments are correct
     if(result == 2){
         // Check limits
-        if(draw->check_draw_limits(draw, x, y))
+        if(session->check_draw_limits(session->draw, x, y))
         {
-            point(draw, x, y); // Draw the point
+            point(session->draw, x, y); // Draw the point
             return SUCCESS;
         }
         else
@@ -462,7 +469,7 @@ ERRORHANDLE point_parser        (Draw *draw, char *arguments){
  * contain the coordinates.
  */
 
-ERRORHANDLE line_parser         (Draw *draw, char *arguments){
+ERRORHANDLE line_parser         (Draw_session *session, char *arguments){
     
     int x1, y1, x2, y2;
     int result = sscanf(arguments, "%d %d %d %d", &x1, &y1, &x2, &y2);
@@ -471,10 +478,10 @@ ERRORHANDLE line_parser         (Draw *draw, char *arguments){
     // Check if the number of arguments are correct
     if(result == 4){
         // Check limits
-        if(draw->check_draw_limits(draw, x1, y1) && 
-                draw->check_draw_limits(draw, x2, y2))
+        if(session->check_draw_limits(session->draw, x1, y1) && 
+                session->check_draw_limits(session->draw, x2, y2))
         {
-            line(draw, x1, y1, x2, y2); // Draw the line
+            line(session->draw, x1, y1, x2, y2); // Draw the line
             return SUCCESS;
         }
         else
@@ -497,7 +504,7 @@ ERRORHANDLE line_parser         (Draw *draw, char *arguments){
  * contain the coordinates.
  */
 
-ERRORHANDLE rect_parser          (Draw *draw, char *arguments){
+ERRORHANDLE rect_parser          (Draw_session *session, char *arguments){
         
     int x1, y1, x2, y2;
     int result = sscanf(arguments, "%d %d %d %d", &x1, &y1, &x2, &y2);
@@ -505,10 +512,10 @@ ERRORHANDLE rect_parser          (Draw *draw, char *arguments){
     // Check if the number of arguments are correct
     if(result == 4){
         // Check limits
-        if(draw->check_draw_limits(draw, x1, y1) && 
-                draw->check_draw_limits(draw, x2, y2))
+        if(session->check_draw_limits(session->draw, x1, y1) && 
+                session->check_draw_limits(session->draw, x2, y2))
         {
-            rect(draw, x1, y1, x2, y2); // Draw the line
+            rect(session->draw, x1, y1, x2, y2); // Draw the line
             return SUCCESS;
         }
         else

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "Drawing_command.h"
-#include "Draw.h"
+#include "Draw_session.h"
 #include "ERROS.h"
 
 
@@ -82,7 +82,7 @@ void point(Draw *d, int x, int y){
  * @param x2    : The coordinate x of the second point
  * @param y2    : the coordinate y of the second point
  */
-void line (Draw *d, int x1, int y1, int x2, int y2){
+void line (Draw*d, int x1, int y1, int x2, int y2){
     
     /** Based on the equation y = mx + b */
 
@@ -272,4 +272,3 @@ void circ(Draw *d, int x, int y, int r){
          }
      }
 }
-

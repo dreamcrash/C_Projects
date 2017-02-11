@@ -1,12 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "Draw.h"
 #include "Drawing_command.h"
-#include "Management_command.h"
-#include "Command_parser.h"
-#include "Graphic_interface.h"
-#include "My_String.h"
+
+
+void free_draw(Draw *draw){
+    free_screen(draw->screen, draw->number_rows);
+    free(draw);
+}
+
+/**
+ * Creating and returning a draw object with dimension cols and rows.
+ * If the dimensions are not within the limits, the dimension
+ * will be adjust to a given default size
+ * 
+ * @param cols  : The total of columns of the draw
+ * @param rows  : The total of rows of the draw
+ * @return      : The created draw
+ */    
+Draw *new_draw (int cols, int rows){
+    
+    // Check for out of boundaries problems
+    check_adjust_boundaries(&cols, &rows);
+    
+    char **screen = create_screen_draw(cols, rows);
+    
+    if(screen)
+    {
+        Draw *draw = malloc(sizeof(*draw));
+        
+        if(draw)
+        {
+            draw->number_cols       = cols;
+            draw->number_rows       = rows;
+            draw->screen            = screen;
+            draw->marker            = DEFAULT_CHAR;
+            clean(draw);
+            return draw;
+        }
+    }
+    // memory problems
+    return NULL;
+}
+
 
 /**
  * This function will verify if the point to be printed into the screen
@@ -49,7 +85,7 @@ void check_adjust_boundaries(int *cols, int *rows){
  * @param rows  : the number of rows of the draw
  * @return      : The newly created matrix 
  */
- char **create_screen_draw(int cols, int rows){
+char **create_screen_draw(int cols, int rows){
     
      char **screen = malloc(sizeof(screen) * rows);
     
@@ -78,79 +114,6 @@ void check_adjust_boundaries(int *cols, int *rows){
  }
 
 /**
- * Creating and returning a draw object with dimension cols and rows.
- * If the dimensions are not within the limits, the dimension
- * will be adjust to a given default size
- * 
- * @param cols  : The total of columns of the draw
- * @param rows  : The total of rows of the draw
- * @return      : The created draw
- */    
-Draw *new_draw (int cols, int rows){
-    
-    // Check for out of boundaries problems
-    check_adjust_boundaries(&cols, &rows);
-    
-    char **screen = create_screen_draw(cols, rows);
-    
-    if(screen)
-    {
-        Draw *draw = malloc(sizeof(*draw));
-        
-        if(draw)
-        {
-            draw->number_cols       = cols;
-            draw->number_rows       = rows;
-            add_functions_to_draw(draw);
-            draw->screen            = screen;
-            draw->marker            = DEFAULT_CHAR;
-            clean(draw);
-            return draw;
-        }
-    }
-    // memory problems
-    return NULL;
-}
-
-
-/**
- * This function will add to the draw the pointers to specific functions
- * 
- * @param draw : The draw
- */
-void add_functions_to_draw(Draw *draw){
-    
-    draw->print             = printDraw;
-    draw->check_draw_limits = check_draw;
-}
-
-
-/**
- * Function that will print the draw into the screen as ask the user for
- * commands to be performed in the draw
- * 
- * @param draw              : Draw to be printed    
- * @param command_parser    : Commands parser functions
- */
-
-ERRORHANDLE draw_in_screen(Draw *draw, const Command_parser *command_parser){
-  
-    int drawing = KEEP_EXECUTION;
-    
-    while(drawing != EXIT)
-    {
-        draw->print(draw); // print the draw into the screen
-        
-        printf("Insert Command > ");
-        // read commands from keyboard
-        drawing = execute_commands(draw, command_parser);
-        check_erros_msg(drawing);
-    }
-    
-    return drawing;
-}
-
-/**
  * This function will free the memory allocated to the matrix
  * that holds the draw.
  * 
@@ -165,52 +128,3 @@ void free_screen(char **screen, int rows){
     }
     free(screen);
 }
-
-/**
- * This function will free the memory occupied by a given draw
- * @param draw : The draw to be freed
- */
-void free_draw(Draw **draw){
-    
-    Draw *tmp = *draw;
-    
-    free_screen(tmp->screen, tmp->number_rows);
-    
-    tmp->screen = NULL;
-    tmp->print = NULL;
-    tmp->check_draw_limits = NULL;
-    free(*draw);
-    *draw = NULL;
-}
-/* Function that starts a draw and creates the necessary 
- * structures
- */
-ERRORHANDLE start_draw(int cols, int rows){
-            
-        Draw *draw = dim(cols, rows);
-        
-        return (draw) ? to_draw(draw) : MEMORY_PROBLEMS;
-   }
-
-
-/**
- * Performing the actually draw
- * @param draw : The empty draw
- * @return 
- */
-ERRORHANDLE to_draw(Draw *draw){
-    
-    Command_parser *command_parser  = load_command_parser();
-    
-    if(command_parser)
-    {
-        int result = draw_in_screen(draw, command_parser);
-        free_draw(&draw);
-        free_comand_parser(&command_parser);
-        return result;
-    }
-    else{
-        free_draw(&draw);
-        return MEMORY_PROBLEMS;
-    }
-} 
